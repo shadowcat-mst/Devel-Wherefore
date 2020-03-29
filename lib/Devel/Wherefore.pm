@@ -1,6 +1,6 @@
 package Devel::Wherefore;
 
-our $VERSION = '0.000001'; # 0.0.1
+our $VERSION = '0.000002'; # v0.0.2
 
 $VERSION = eval $VERSION;
 
