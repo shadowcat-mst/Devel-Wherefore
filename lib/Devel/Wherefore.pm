@@ -10,6 +10,11 @@ use B ();
 use Sub::Identify qw(sub_fullname get_code_location);
 use Package::Stash;
 
+# detect -d:Wherefore and disable debugger features
+if (!defined &DB::DB && $^P & 0x02) {
+  $^P = 0;
+}
+
 sub import {
   our (undef, $pkg) = @_;
   unless ($pkg) {
@@ -23,7 +28,8 @@ sub import {
 }
 
 sub CHECK {
-  my $subs = Package::Stash->new(our $pkg)->get_all_symbols('CODE');
+  return unless our $pkg;
+  my $subs = Package::Stash->new($pkg)->get_all_symbols('CODE');
   print "# Symbols found in package ${pkg} after compiling $0\n";
   foreach my $name (sort keys %$subs) {
     my $fullname = sub_fullname $subs->{$name};
@@ -32,6 +38,7 @@ sub CHECK {
       map +(defined() ? $_ : "\\N"), ${name}, ${fullname}, ${file}, ${line}
     )."\n";
   }
+  close(STDERR);
 }
 
 1;
@@ -42,15 +49,15 @@ Devel::Wherefore - Where the heck did these subroutines come from?
 
 =head1 SYNOPSIS
 
-  $ perl -MDevel::Wherefore myscript.pl
+  $ perl -d:Wherefore myscript.pl
 
 will dump symbols in main from myscript.pl
 
-  $ perl -MDevel::Wherefore=App::opan $(which opan)
+  $ perl -d:Wherefore=App::opan $(which opan)
 
 will dump symbols from package App::opan in the installed opan script
 
-  $ perl -MDevel::Wherefore lib/Foo/Bar.pm
+  $ perl -d:Wherefore lib/Foo/Bar.pm
 
 will dump symbols from package Foo::Bar (must be in lib/ or at root, doesn't
 yet handle finding them in @INC, sorry).

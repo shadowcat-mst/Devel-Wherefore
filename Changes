@@ -1,4 +1,7 @@
 Revision history for Devel-Wherefore
 
+  - Work as -d:Wherefore as well as -MDevel::Wherefore
+  - Close stderr after CHECK to skip the 'syntax OK' output from minus_c
+
 0.000001 - 2020-03-29
   - Released on an unsuspecting world
