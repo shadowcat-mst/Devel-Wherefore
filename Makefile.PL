@@ -10,5 +10,6 @@ WriteMakefile(
   PREREQ_PM => {
     'Sub::Identify' => '0.14',
     'Package::Stash' => '0.37',
+    'Data::Munge' => '0.097',
   },
 );

@@ -9,6 +9,7 @@ use warnings;
 use B ();
 use Sub::Identify qw(sub_fullname get_code_location);
 use Package::Stash;
+use Data::Munge qw(list2re);
 
 # detect -d:Wherefore and disable debugger features
 if (!defined &DB::DB && $^P & 0x02) {
@@ -18,7 +19,8 @@ if (!defined &DB::DB && $^P & 0x02) {
 sub import {
   our (undef, $pkg) = @_;
   unless ($pkg) {
-    if (my ($path) = $0 =~ m{^(?:lib/)?(.*)\.pm$}) {
+    my $prefix = list2re @INC, 'lib';
+    if (my ($path) = $0 =~ m{^(?:${prefix}/)?(.*)\.pm$}) {
       $pkg = join '::', split '/', $path;
     } else {
       $pkg = 'main';
@@ -59,8 +61,11 @@ will dump symbols from package App::opan in the installed opan script
 
   $ perl -d:Wherefore lib/Foo/Bar.pm
 
-will dump symbols from package Foo::Bar (must be in lib/ or at root, doesn't
-yet handle finding them in @INC, sorry).
+will dump symbols from package Foo::Bar (we guess the package by stripping
+either 'lib' or any @INC entry off the front, then assuming the package
+name is Foo::Bar for Foo/Bar.pm etc). Which means this also works:
+
+  $ perl -d:Wherefore $(perldoc -lm App::Cpan)
 
 Note that this code uses C<B::minus_c> to only compile the script so you
 don't have to worry about it executing - does mean we'll miss runtime
