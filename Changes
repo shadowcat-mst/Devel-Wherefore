@@ -1,5 +1,6 @@
 Revision history for Devel-Wherefore
 
+0.000003 - 2020-03-29
   - Use @INC as well as 'lib' for package guessing
 
 0.000002 - 2020-03-29
